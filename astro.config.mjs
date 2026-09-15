@@ -11,11 +11,10 @@ import { remarkReadingTime } from './remark-reading-time.mjs';
 
 // https://astro.build/config
 export default defineConfig({
-  // GitHub Pages project-site URL — https://pr4vndevhubX.github.io/portfolio/.
-  // If a custom domain is added later (via public/CNAME), drop `base` back to
-  // '/' and update `site` to the domain.
+  // GitHub Pages user-site — repo renamed to pr4vndevhubX.github.io, so it
+  // serves from the root instead of a /portfolio/ project-site path.
   site: 'https://pr4vndevhubX.github.io',
-  base: '/portfolio/',
+  base: '/',
   devToolbar: { enabled: false },
   integrations: [mdx(), sitemap()],
   markdown: {

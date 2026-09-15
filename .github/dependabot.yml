@@ -13,6 +13,12 @@ updates:
         update-types:
           - minor
           - patch
+    # typescript 7 breaks `astro check` (@astrojs/check doesn't support it
+    # yet) — stop Dependabot from re-proposing this major bump every week
+    # until that support lands.
+    ignore:
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     commit-message:
       prefix: chore
       include: scope

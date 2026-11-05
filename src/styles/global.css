@@ -139,7 +139,6 @@ body {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 /* Long-form posts get a near-solid panel so body text stays easy to read. */
@@ -218,7 +217,16 @@ a:not(.brand, .button, .rail-link, .glass-card):hover {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    transform 320ms cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 320ms ease;
+}
+
+/* Set by the scroll script in BaseLayout; keyboard focus always reveals it. */
+.site-header.is-hidden:not(:focus-within) {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(-100% - 1rem));
 }
 
 .brand {
@@ -285,7 +293,6 @@ a:not(.brand, .button, .rail-link, .glass-card):hover {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   transform: translateY(-50%);
 }
 
@@ -443,7 +450,6 @@ a:not(.brand, .button, .rail-link, .glass-card):hover {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   transition:
     transform 220ms ease,
     box-shadow 220ms ease,
@@ -1337,7 +1343,6 @@ pre code {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   transition:
     transform 220ms ease,
     box-shadow 220ms ease;
@@ -1470,7 +1475,6 @@ pre code {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   color: var(--color-muted);
   font-size: 0.88rem;
 }

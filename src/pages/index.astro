@@ -181,8 +181,8 @@ const websiteSchema = {
 <script>
   // Hover "water" for the hero glass cards: a spring-driven liquid front that
   // surges from the top-left corner to the bottom-right, with a sloshing
-  // surface (1D spring columns), a foam line, a lighter spray layer and
-  // rising bubbles. Draining on leave runs the same physics in reverse.
+  // surface (1D spring columns), a foam line and a lighter spray layer.
+  // Draining on leave runs the same physics in reverse.
   const COLS = 32;
   const MARGIN = 28;
 
@@ -210,7 +210,6 @@ const websiteSchema = {
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const heights = new Float32Array(COLS);
     const speeds = new Float32Array(COLS);
-    const bubbles: { x: number; y: number; r: number; life: number; max: number }[] = [];
 
     // Geometry: `d` is the travel direction (top-left → bottom-right), `u` runs
     // along the water front. Positions are projections from the card centre.
@@ -232,8 +231,7 @@ const websiteSchema = {
       sprayV = 0,
       target = 0;
     let energy = 0,
-      time = 0,
-      frame = 0;
+      time = 0;
     let deep: Rgb = [0, 0, 0],
       surface: Rgb = [0, 0, 0];
 
@@ -298,7 +296,6 @@ const websiteSchema = {
 
     const step = () => {
       time += 1 / 60;
-      frame++;
 
       // Front and spray are damped springs, so the water surges, slightly
       // overshoots, and settles like a liquid instead of easing linearly.
@@ -321,19 +318,6 @@ const websiteSchema = {
           if (i < COLS - 1) speeds[i + 1] += (heights[i] - heights[i + 1]) * 0.22;
         }
       }
-
-      if (Math.abs(frontV) > 0.4 && target > dMin && frame % 3 === 0) {
-        const u = uMin + Math.random() * (uMax - uMin);
-        const [x, y] = point(u, front - 6 - Math.random() * 30);
-        const max = 50 + Math.random() * 40;
-        bubbles.push({ x, y, r: 1 + Math.random() * 2.2, life: max, max });
-      }
-      for (const b of bubbles) {
-        b.y -= 0.7;
-        b.x += Math.sin((b.life + b.r * 10) / 8) * 0.3;
-        b.life--;
-      }
-      for (let i = bubbles.length - 1; i >= 0; i--) if (bubbles[i].life <= 0) bubbles.splice(i, 1);
 
       card.classList.toggle('is-wet', (front - dMin) / (dMax - dMin) > 0.55);
     };
@@ -359,14 +343,6 @@ const websiteSchema = {
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.restore();
-
-      for (const b of bubbles) {
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.55 * (b.life / b.max)})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
     };
 
     let raf = 0;
@@ -374,8 +350,7 @@ const websiteSchema = {
       Math.abs(target - front) < 0.5 &&
       Math.abs(frontV) < 0.05 &&
       Math.abs(target - spray) < 12 &&
-      energy < 0.05 &&
-      bubbles.length === 0;
+      energy < 0.05;
 
     // Fixed 60 Hz physics steps driven by elapsed time, so the fill takes the
     // same time on slow devices (fewer frames) as on fast ones.

@@ -214,6 +214,33 @@ const NAV_ICONS: Record<string, string> = {
         document.documentElement.dataset.theme = next;
         localStorage.setItem('theme', next);
       });
+
+      // Hide the floating header while scrolling down, reveal it on scroll up.
+      // The header is looked up per frame because view transitions replace it.
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+      const updateHeader = () => {
+        ticking = false;
+        const header = document.querySelector('.site-header');
+        const y = window.scrollY;
+        const delta = y - lastScrollY;
+        if (!header || Math.abs(delta) < 6) return;
+        header.classList.toggle('is-hidden', delta > 0 && y > 120);
+        lastScrollY = y;
+      };
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(updateHeader);
+          }
+        },
+        { passive: true },
+      );
+      document.addEventListener('astro:after-swap', () => {
+        lastScrollY = window.scrollY;
+      });
     </script>
   </body>
 </html>

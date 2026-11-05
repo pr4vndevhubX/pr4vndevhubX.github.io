@@ -111,7 +111,11 @@ html {
    <html> background stays as the fallback while the photo loads. */
 body {
   min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
+  display: flex;
+  flex-direction: column;
   background: transparent;
 }
 
@@ -139,6 +143,7 @@ body {
   background: var(--glass-bg);
   box-shadow: var(--glass-shadow);
   backdrop-filter: var(--glass-blur);
+  flex: 1 0 auto;
 }
 
 /* Long-form posts get a near-solid panel so body text stays easy to read. */
@@ -219,7 +224,7 @@ a:not(.brand, .button, .rail-link, .glass-card):hover {
   backdrop-filter: var(--glass-blur);
   transition:
     transform 320ms cubic-bezier(0.33, 1, 0.68, 1),
-    opacity 320ms ease;
+    opacity 120ms ease;
 }
 
 /* Set by the scroll script in BaseLayout; keyboard focus always reveals it. */
@@ -905,6 +910,11 @@ pre code {
 .prose p,
 .prose li {
   color: var(--color-muted);
+}
+
+.prose li,
+.timeline-bullets li {
+  line-height: 1.65;
 }
 
 .entry-meta {

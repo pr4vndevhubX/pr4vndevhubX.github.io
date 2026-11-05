@@ -2,17 +2,22 @@
   color-scheme: light;
   /* Palette ported from astro-sienna (anjay-goel/astro-sienna) — warm
      paper/ink/sienna tones instead of the earlier blue-accent BracoZS set. */
-  --color-accent: #8a4423;
+  --color-accent: #c24e36;
   --color-accent-hover: color-mix(in oklch, var(--color-accent), black 12%);
   --color-accent-soft: color-mix(in oklch, var(--color-accent), transparent 84%);
-  --color-on-accent: #fbf6ec;
-  --color-bg: #f6f1e6;
-  --color-surface: #fbf6ec;
-  --color-text: #25201b;
-  --color-muted: #4a4239;
-  --color-line: #d9cfb9;
+  --color-on-accent: #fff8f4;
+  --color-bg: #f7eee9;
+  --color-surface: #fffaf7;
+  --color-text: #221c22;
+  --color-muted: #4b4049;
+  --color-line: color-mix(in oklch, var(--color-text), transparent 78%);
   --color-line-strong: color-mix(in oklch, var(--color-line), black 18%);
-  --color-soft: #fbf6ec;
+  --color-soft: #fffaf7;
+  --glass-bg: color-mix(in oklch, white, transparent 55%);
+  --glass-bg-strong: color-mix(in oklch, white, transparent 25%);
+  --glass-border: color-mix(in oklch, white, transparent 30%);
+  --glass-shadow: 0 12px 32px -14px rgb(70 30 40 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.7);
+  --bg-tint: rgb(255 246 242 / 0.18);
   --font-display: 'Fraunces Variable', Georgia, serif;
   --font-body: 'Public Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
@@ -21,55 +26,72 @@
   --prose-width: 68ch;
   --page-pad: clamp(1rem, 3vw, 2rem);
   --baseline: 1.5rem;
+  /* Translucent lines read on any part of the photo behind the glass. */
   --hairline: 1px solid var(--color-line);
   --focus-ring: 0 0 0 3px var(--color-accent-soft);
+  --glass-blur: blur(24px) saturate(1.5);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --color-accent: #c89761;
+    --color-accent: #ff9478;
     --color-accent-hover: color-mix(in oklch, var(--color-accent), white 10%);
     --color-accent-soft: color-mix(in oklch, var(--color-accent), transparent 78%);
-    --color-on-accent: #1a1715;
-    --color-bg: #131110;
-    --color-surface: #1a1715;
-    --color-text: #f4f0e3;
-    --color-muted: #c8c1ae;
-    --color-line: #2a2622;
+    --color-on-accent: #2a1210;
+    --color-bg: #13121a;
+    --color-surface: #1c1a25;
+    --color-text: #f6f0ef;
+    --color-muted: #cdc4cc;
+    --color-line: color-mix(in oklch, white, transparent 80%);
     --color-line-strong: color-mix(in oklch, var(--color-line), white 18%);
-    --color-soft: #1a1715;
+    --color-soft: #1c1a25;
+    --glass-bg: color-mix(in oklch, #1c1a25, transparent 45%);
+    --glass-bg-strong: color-mix(in oklch, #2a2733, transparent 15%);
+    --glass-border: color-mix(in oklch, white, transparent 88%);
+    --glass-shadow: 0 12px 32px -14px rgb(0 0 0 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.08);
+    --bg-tint: rgb(10 9 18 / 0.55);
   }
 }
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --color-accent: #8a4423;
+  --color-accent: #c24e36;
   --color-accent-hover: color-mix(in oklch, var(--color-accent), black 12%);
   --color-accent-soft: color-mix(in oklch, var(--color-accent), transparent 84%);
-  --color-on-accent: #fbf6ec;
-  --color-bg: #f6f1e6;
-  --color-surface: #fbf6ec;
-  --color-text: #25201b;
-  --color-muted: #4a4239;
-  --color-line: #d9cfb9;
+  --color-on-accent: #fff8f4;
+  --color-bg: #f7eee9;
+  --color-surface: #fffaf7;
+  --color-text: #221c22;
+  --color-muted: #4b4049;
+  --color-line: color-mix(in oklch, var(--color-text), transparent 78%);
   --color-line-strong: color-mix(in oklch, var(--color-line), black 18%);
-  --color-soft: #fbf6ec;
+  --color-soft: #fffaf7;
+  --glass-bg: color-mix(in oklch, white, transparent 55%);
+  --glass-bg-strong: color-mix(in oklch, white, transparent 25%);
+  --glass-border: color-mix(in oklch, white, transparent 30%);
+  --glass-shadow: 0 12px 32px -14px rgb(70 30 40 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.7);
+  --bg-tint: rgb(255 246 242 / 0.18);
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-accent: #c89761;
+  --color-accent: #ff9478;
   --color-accent-hover: color-mix(in oklch, var(--color-accent), white 10%);
   --color-accent-soft: color-mix(in oklch, var(--color-accent), transparent 78%);
-  --color-on-accent: #1a1715;
-  --color-bg: #131110;
-  --color-surface: #1a1715;
-  --color-text: #f4f0e3;
-  --color-muted: #c8c1ae;
-  --color-line: #2a2622;
+  --color-on-accent: #2a1210;
+  --color-bg: #13121a;
+  --color-surface: #1c1a25;
+  --color-text: #f6f0ef;
+  --color-muted: #cdc4cc;
+  --color-line: color-mix(in oklch, white, transparent 80%);
   --color-line-strong: color-mix(in oklch, var(--color-line), white 18%);
-  --color-soft: #1a1715;
+  --color-soft: #1c1a25;
+  --glass-bg: color-mix(in oklch, #1c1a25, transparent 45%);
+  --glass-bg-strong: color-mix(in oklch, #2a2733, transparent 15%);
+  --glass-border: color-mix(in oklch, white, transparent 88%);
+  --glass-shadow: 0 12px 32px -14px rgb(0 0 0 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.08);
+  --bg-tint: rgb(10 9 18 / 0.55);
 }
 
 * {
@@ -85,10 +107,51 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+/* Transparent so the fixed .site-bg photo (z-index -1) shows through; the
+   <html> background stays as the fallback while the photo loads. */
 body {
   min-width: 320px;
   margin: 0;
-  background: var(--color-bg);
+  background: transparent;
+}
+
+/* Fixed sunset photo behind every page, with a per-theme tint for contrast. */
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg-large) 60% 40% / cover no-repeat;
+}
+
+.site-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bg-tint);
+}
+
+/* The big frosted panel that holds each page's content. */
+.glass-panel {
+  width: min(calc(var(--content-width) + 6rem), calc(100% - clamp(0.75rem, 2vw, 1.25rem) * 2));
+  margin: 1.25rem auto;
+  border: 1px solid var(--glass-border);
+  border-radius: 2rem;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Long-form posts get a near-solid panel so body text stays easy to read. */
+.glass-panel.is-reading {
+  background: color-mix(in oklch, var(--color-surface), transparent 18%);
+}
+
+/* Keep page content clear of the fixed side rail on desktop. */
+@media (min-width: 761px) {
+  body {
+    padding-left: 4.5rem;
+  }
 }
 
 ::selection {
@@ -108,7 +171,7 @@ a {
   text-decoration: none;
 }
 
-a:not(.brand, .button) {
+a:not(.brand, .button, .rail-link, .glass-card) {
   background-image: linear-gradient(var(--color-accent), var(--color-accent));
   background-position: 0 100%;
   background-repeat: no-repeat;
@@ -118,7 +181,7 @@ a:not(.brand, .button) {
     color 180ms ease;
 }
 
-a:not(.brand, .button):hover {
+a:not(.brand, .button, .rail-link, .glass-card):hover {
   color: var(--color-accent-hover);
   background-size: 100% 1px;
 }
@@ -129,25 +192,33 @@ a:not(.brand, .button):hover {
   box-shadow: var(--focus-ring);
 }
 
-.site-footer,
 .section {
   width: min(var(--content-width), calc(100% - var(--page-pad) * 2));
   margin-inline: auto;
 }
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+.site-footer {
   width: min(calc(var(--content-width) + 6rem), calc(100% - clamp(0.75rem, 2vw, 1.25rem) * 2));
   margin-inline: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 100;
+  width: min(calc(var(--content-width) + 6rem), calc(100% - clamp(0.75rem, 2vw, 1.25rem) * 2));
+  margin: 0.75rem auto 0;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 1rem;
-  padding-block: calc(var(--baseline) * 0.85);
-  background: var(--color-bg);
-  border-bottom: var(--hairline);
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .brand {
@@ -155,59 +226,132 @@ a:not(.brand, .button):hover {
   align-items: center;
   gap: 0.75rem;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 
 .brand-mark {
   width: 0.95rem;
-  height: 1.85rem;
+  height: 1.6rem;
   border-left: 1px solid var(--color-accent);
   border-right: 1px solid var(--color-accent);
 }
 
-.site-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.35rem clamp(0.5rem, 1.4vw, 1.1rem);
+/* Centre pill — the glass "search bar" slot from the reference layout. */
+.header-tagline {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-.site-nav a {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0;
-  color: var(--color-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
+.header-tagline-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, white, var(--color-accent) 70%);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .nav-icon {
   flex-shrink: 0;
-  opacity: 0.85;
 }
 
-.site-nav a[aria-current='page'] {
+/* Floating glass icon rail; labels appear as tooltips on hover/focus. */
+.side-rail {
+  position: fixed;
+  top: 50%;
+  left: clamp(0.75rem, 1.5vw, 1.5rem);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.45rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transform: translateY(-50%);
+}
+
+.rail-link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  color: var(--color-muted);
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.rail-link:hover {
   color: var(--color-text);
-  background-size: 100% 1px;
+  background: var(--glass-bg-strong);
+  transform: scale(1.06);
 }
 
-/* Icon-only square toggle — no visible label, just the sun/moon glyph. */
+.rail-link[aria-current='page'] {
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  box-shadow: 0 6px 16px -6px var(--color-accent);
+}
+
+.rail-label {
+  position: absolute;
+  left: calc(100% + 0.75rem);
+  top: 50%;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  background: var(--glass-bg-strong);
+  box-shadow: var(--glass-shadow);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-0.25rem, -50%);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.rail-link:hover .rail-label,
+.rail-link:focus-visible .rail-label {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* Icon-only round toggle — no visible label, just the sun/moon glyph. */
 .theme-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.15rem;
-  height: 2.15rem;
-  border: var(--hairline);
-  border-radius: 0.5rem;
-  background: var(--color-surface);
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  background: var(--glass-bg-strong);
   color: var(--color-text);
   cursor: pointer;
   transition:
@@ -268,8 +412,142 @@ a:not(.brand, .button):hover {
   animation-delay: 270ms;
 }
 
+.hero > :nth-child(5) {
+  animation-delay: 360ms;
+}
+
 .section {
   padding-block: clamp(3.5rem, 5.5vw, 5.5rem);
+}
+
+/* Hero glass stat cards — a column beside the headline on wide screens,
+   a 2x2 grid under it otherwise. */
+.hero-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: calc(var(--baseline) * 1.5);
+}
+
+.glass-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 9.5rem;
+  padding: 1.1rem 1.15rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    color 300ms ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 18px 36px -16px rgb(60 40 20 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.4);
+}
+
+/* Canvas drawn by the water script in index.astro; sits behind the text. */
+.glass-card-water {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.glass-card.is-wet {
+  color: var(--color-on-accent);
+}
+
+.glass-card p {
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+.glass-card-label {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.glass-card-value {
+  margin-top: auto !important;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.glass-card-title {
+  margin-top: auto !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.glass-card-label,
+.glass-card-note {
+  transition: color 300ms ease;
+}
+
+.glass-card.is-wet .glass-card-label,
+.glass-card.is-wet .glass-card-note {
+  color: color-mix(in oklch, var(--color-on-accent), transparent 22%);
+}
+
+.glass-card-note {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.glass-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.glass-card-tags li {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg-strong);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+@media (min-width: 1100px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+    column-gap: clamp(2rem, 4vw, 4rem);
+  }
+
+  .hero > :not(.hero-cards) {
+    grid-column: 1;
+  }
+
+  .hero-cards {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    align-self: center;
+    margin-top: 0;
+  }
 }
 
 .page-head {
@@ -402,16 +680,12 @@ p {
 
 .feature-list {
   display: grid;
-  gap: 1px;
-  background: var(--color-line);
-  border: var(--hairline);
+  gap: 0.85rem;
 }
 
 .feature-list article {
   min-height: 10rem;
   padding: clamp(1.5rem, 3vw, 2.25rem);
-  background: var(--color-bg);
-  position: relative;
 }
 
 .feature-list article::before {
@@ -437,10 +711,10 @@ p {
 }
 
 code {
-  padding: 0.08rem 0.28rem;
-  border: var(--hairline);
-  background: var(--color-soft);
-  border-radius: 3px;
+  padding: 0.08rem 0.32rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-strong);
+  border-radius: 0.35rem;
   font-family: var(--font-mono);
   font-size: 0.9em;
 }
@@ -448,8 +722,10 @@ code {
 pre {
   padding: var(--baseline);
   overflow-x: auto;
-  border: var(--hairline);
-  background: var(--color-soft);
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  background: var(--glass-bg-strong);
+  box-shadow: var(--glass-shadow);
   font-family: var(--font-mono);
   font-size: 0.92rem;
   line-height: 1.7;
@@ -470,8 +746,6 @@ pre code {
   top: 0.6rem;
   right: 0.6rem;
   padding: 0.25rem 0.6rem;
-  border: var(--hairline);
-  background: var(--color-bg);
   color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -532,9 +806,7 @@ pre code {
   display: inline-flex;
   min-height: 2.1rem;
   align-items: center;
-  border: var(--hairline);
-  padding: 0.35rem 0.7rem;
-  background: var(--color-bg);
+  padding: 0.35rem 0.85rem;
   color: var(--color-muted);
   font-size: 0.82rem;
   font-weight: 700;
@@ -548,7 +820,8 @@ pre code {
 /* ProjectRow — ported from BracoZS/astro-starter-portfolio's WorkRow, single-line
    list rows instead of the boxed .work-card grid below. */
 .project-rows {
-  border-top: var(--hairline);
+  display: grid;
+  gap: 0.85rem;
 }
 
 .project-row {
@@ -556,14 +829,8 @@ pre code {
   grid-template-columns: 4.5rem minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 1.25rem;
-  padding-block: calc(var(--baseline) * 0.85);
-  border-bottom: var(--hairline);
+  padding: 1.1rem 1.4rem;
   background-image: none;
-  transition: border-color 180ms ease;
-}
-
-.project-row:hover {
-  border-color: var(--color-accent);
 }
 
 .project-row:hover .project-row-title,
@@ -666,9 +933,7 @@ pre code {
   display: inline-flex;
   min-height: 2.1rem;
   align-items: center;
-  border: var(--hairline);
   padding: 0.35rem 0.9rem;
-  background: var(--color-bg);
   color: var(--color-text);
 }
 
@@ -687,14 +952,11 @@ pre code {
 .post-nav {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--color-line);
-  border: var(--hairline);
+  gap: 0.85rem;
 }
 
 .post-nav > * {
   padding: clamp(1.25rem, 3vw, 2rem);
-  background: var(--color-bg);
 }
 
 .post-nav a {
@@ -840,9 +1102,6 @@ pre code {
   gap: 0.35rem;
   height: 2rem;
   padding: 0 0.75rem;
-  border: var(--hairline);
-  border-radius: 999px;
-  background: var(--color-surface);
   color: var(--color-muted);
   background-image: none;
   font-family: var(--font-mono);
@@ -914,11 +1173,11 @@ pre code {
 .timeline-row::before {
   content: '';
   position: absolute;
-  top: 1.5rem;
+  top: calc(var(--baseline) * 0.85 + 1.75rem);
   left: 6rem;
   width: 0.55rem;
   height: 0.55rem;
-  background: var(--color-bg);
+  background: var(--glass-bg-strong);
   border: 1px solid var(--color-muted);
   border-radius: 999px;
   transform: translate(-50%, -50%);
@@ -933,7 +1192,7 @@ pre code {
 }
 
 .timeline-date {
-  padding-top: 0.2rem;
+  padding-top: 1.35rem;
   color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -942,7 +1201,8 @@ pre code {
 
 .timeline-content {
   min-width: 0;
-  max-width: 58ch;
+  max-width: 64ch;
+  padding: 1.15rem 1.4rem;
 }
 
 .timeline-badge {
@@ -1045,15 +1305,52 @@ pre code {
 .highlight-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--color-line);
-  border: var(--hairline);
+  gap: 0.85rem;
 }
 
+/* Glass chips: tags, tech pills, share/social/pagination/copy buttons. */
+.tag-cloud li,
+.tech-list li,
+.tag-list li,
+.pagination a,
+.share-button,
+.social-links a,
+.code-copy {
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background-color: var(--glass-bg-strong);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35);
+}
+
+/* Glass tiles for content blocks (focus areas, project cards and rows, about
+   ledger, timeline entries, post nav), matching the hero cards. */
+.feature-list article,
 .highlight-card,
-.about-ledger article {
-  background: var(--color-bg);
+.about-ledger article,
+.project-row,
+.timeline-content,
+.post-nav > * {
   position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.highlight-card:hover,
+.project-row:hover,
+.timeline-row:hover .timeline-content,
+.post-nav a:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 18px 36px -16px rgb(60 40 20 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.4);
 }
 
 .highlight-card {
@@ -1099,8 +1396,7 @@ pre code {
 }
 
 .tag-list li {
-  padding: 0.2rem 0.45rem;
-  border: var(--hairline);
+  padding: 0.2rem 0.6rem;
   color: var(--color-muted);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -1118,9 +1414,7 @@ pre code {
 .about-ledger {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--color-line);
-  border: var(--hairline);
+  gap: 0.85rem;
 }
 
 .about-ledger article {
@@ -1169,8 +1463,14 @@ pre code {
   align-items: center;
   justify-content: space-between;
   gap: 1rem 1.5rem;
-  padding-block: calc(var(--baseline) * 1.3);
-  border-top: var(--hairline);
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   color: var(--color-muted);
   font-size: 0.88rem;
 }
@@ -1196,7 +1496,6 @@ pre code {
   width: 2.6rem;
   height: 2.6rem;
   place-items: center;
-  border: var(--hairline);
   color: color-mix(in oklch, var(--color-accent), var(--color-muted) 40%);
   background-image: none;
   transition:
@@ -1234,26 +1533,57 @@ pre code {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --glass-blur: blur(14px) saturate(1.4);
+  }
+
+  .site-bg {
+    background-image: var(--bg-small);
+    background-position: 68% 40%;
+  }
+
+  .glass-panel {
+    border-radius: 1.5rem;
+  }
+
+  .site-footer {
+    border-radius: 1.5rem;
+  }
+
+  .header-tagline {
+    display: none;
+  }
+
   .site-header {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr auto;
   }
 
-  .brand {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
+  body {
+    padding-bottom: 5.5rem;
   }
 
-  .theme-toggle {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
+  .side-rail {
+    top: auto;
+    bottom: 0.75rem;
+    left: 50%;
+    flex-direction: row;
+    max-width: calc(100% - 1.5rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+    transform: translateX(-50%);
   }
 
-  .site-nav {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-content: flex-start;
+  .rail-link {
+    flex-shrink: 0;
+  }
+
+  /* Tooltips can't sit beside a bottom bar; keep labels for screen readers only. */
+  .rail-label {
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
   }
 
   .hero::before {

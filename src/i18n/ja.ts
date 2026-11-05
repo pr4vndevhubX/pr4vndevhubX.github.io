@@ -18,6 +18,7 @@ export const ja: UIStrings = {
   'nav.label': 'メインナビゲーション',
   'nav.brandHome': '{site} のホーム',
   'theme.toggle': '配色テーマを切り替える',
+  'header.tagline': 'AI/ML エンジニア · LLM & エージェント AI',
   'footer.notes': 'ノート',
   'social.label': 'ソーシャルリンク',
 

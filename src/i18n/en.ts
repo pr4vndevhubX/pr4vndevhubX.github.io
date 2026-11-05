@@ -29,6 +29,7 @@ export const en = {
   'nav.label': 'Main navigation',
   'nav.brandHome': '{site} home',
   'theme.toggle': 'Toggle color theme',
+  'header.tagline': 'AI/ML Engineer · LLMs & Agentic AI',
   'footer.notes': 'Notes',
   'social.label': 'Social links',
 

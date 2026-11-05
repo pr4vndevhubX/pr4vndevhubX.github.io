@@ -8,12 +8,12 @@ import { withBase } from '../lib/url';
 import { SITE } from '../consts';
 import { formatDate, locale, t } from '../i18n';
 
-const projects = (await getCollection('projects'))
-  .sort((a, b) => {
-    const byDate = b.data.publishDate.getTime() - a.data.publishDate.getTime();
-    return byDate || (a.data.order ?? 999) - (b.data.order ?? 999);
-  })
-  .slice(0, 3);
+const allProjects = (await getCollection('projects')).sort((a, b) => {
+  const byDate = b.data.publishDate.getTime() - a.data.publishDate.getTime();
+  return byDate || (a.data.order ?? 999) - (b.data.order ?? 999);
+});
+const projects = allProjects.slice(0, 3);
+const latestProject = allProjects[0];
 
 const posts = (await getCollection('blog'))
   .filter((post) => !post.data.draft)
@@ -54,6 +54,36 @@ const websiteSchema = {
     <div class="action-row" aria-label={t('home.primaryLinks')}>
       <a class="button" href={withBase('/projects/')}>{t('home.viewProjects')}</a>
       <a class="text-link" href={withBase('/contact/')}>Get in touch →</a>
+    </div>
+    <div class="hero-cards">
+      <a class="glass-card" href={withBase('/experience/')}>
+        <p class="glass-card-label">Now</p>
+        <p class="glass-card-value">1,000+</p>
+        <p class="glass-card-note">live SIEM alerts/day · AI/ML Engineer at Krya Solutions</p>
+      </a>
+      <a class="glass-card" href={withBase('/projects/')}>
+        <p class="glass-card-label">Projects</p>
+        <p class="glass-card-value">{allProjects.length}</p>
+        <p class="glass-card-note">agentic AI, RAG &amp; deep learning builds</p>
+      </a>
+      <a class="glass-card" href={withBase('/publications/')}>
+        <p class="glass-card-label">Research</p>
+        <p class="glass-card-value">94.02%</p>
+        <p class="glass-card-note">voice pathology accuracy · IEEE ICIRCA 2025</p>
+      </a>
+      {
+        latestProject && (
+          <a class="glass-card" href={withBase(`/projects/${latestProject.id}/`)}>
+            <p class="glass-card-label">Latest build</p>
+            <p class="glass-card-title">{latestProject.data.title}</p>
+            <ul class="glass-card-tags">
+              {latestProject.data.tech.slice(0, 2).map((tech) => (
+                <li>{tech}</li>
+              ))}
+            </ul>
+          </a>
+        )
+      }
     </div>
   </section>
 
@@ -147,3 +177,254 @@ const websiteSchema = {
     }
   </section>
 </BaseLayout>
+
+<script>
+  // Hover "water" for the hero glass cards: a spring-driven liquid front that
+  // surges from the top-left corner to the bottom-right, with a sloshing
+  // surface (1D spring columns), a foam line, a lighter spray layer and
+  // rising bubbles. Draining on leave runs the same physics in reverse.
+  const COLS = 32;
+  const MARGIN = 28;
+
+  type Rgb = [number, number, number];
+
+  const parseColor = (value: string): Rgb => {
+    const hex = value.trim().replace('#', '');
+    const full = hex.length === 3 ? [...hex].map((c) => c + c).join('') : hex;
+    const n = parseInt(full, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  const mix = (a: Rgb, b: Rgb, t: number): Rgb =>
+    a.map((v, i) => Math.round(v + (b[i] - v) * t)) as Rgb;
+  const rgba = ([r, g, b]: Rgb, a = 1) => `rgba(${r}, ${g}, ${b}, ${a})`;
+
+  function setupWater(card: HTMLElement) {
+    if (card.querySelector('.glass-card-water')) return;
+    const canvas = document.createElement('canvas');
+    canvas.className = 'glass-card-water';
+    canvas.setAttribute('aria-hidden', 'true');
+    card.prepend(canvas);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heights = new Float32Array(COLS);
+    const speeds = new Float32Array(COLS);
+    const bubbles: { x: number; y: number; r: number; life: number; max: number }[] = [];
+
+    // Geometry: `d` is the travel direction (top-left → bottom-right), `u` runs
+    // along the water front. Positions are projections from the card centre.
+    let w = 0,
+      h = 0,
+      cx = 0,
+      cy = 0,
+      dx = 0,
+      dy = 0,
+      ux = 0,
+      uy = 0;
+    let dMin = 0,
+      dMax = 0,
+      uMin = 0,
+      uMax = 0;
+    let front = 0,
+      frontV = 0,
+      spray = 0,
+      sprayV = 0,
+      target = 0;
+    let energy = 0,
+      time = 0,
+      frame = 0;
+    let deep: Rgb = [0, 0, 0],
+      surface: Rgb = [0, 0, 0];
+
+    const measure = () => {
+      const dpr = window.devicePixelRatio || 1;
+      w = card.offsetWidth;
+      h = card.offsetHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cx = w / 2;
+      cy = h / 2;
+      const len = Math.hypot(w, h);
+      dx = w / len;
+      dy = h / len;
+      ux = -dy;
+      uy = dx;
+      const corners = [
+        [-cx, -cy],
+        [cx, -cy],
+        [cx, cy],
+        [-cx, cy],
+      ];
+      const ds = corners.map(([x, y]) => x * dx + y * dy);
+      const us = corners.map(([x, y]) => x * ux + y * uy);
+      dMin = Math.min(...ds) - MARGIN;
+      dMax = Math.max(...ds) + MARGIN;
+      uMin = Math.min(...us) - 4;
+      uMax = Math.max(...us) + 4;
+
+      const styles = getComputedStyle(card);
+      const accent = parseColor(styles.getPropertyValue('--color-accent'));
+      const text = parseColor(styles.getPropertyValue('--color-text'));
+      deep = mix(accent, text, 0.3);
+      surface = mix(accent, [255, 255, 255], 0.22);
+    };
+
+    const point = (u: number, d: number): [number, number] => [
+      cx + ux * u + dx * d,
+      cy + uy * u + dy * d,
+    ];
+
+    const drawLayer = (edge: number, phase: number, fill: string | CanvasGradient) => {
+      const amp = 2 + Math.min(energy * 2.2, 8);
+      ctx.beginPath();
+      for (let i = 0; i < COLS; i++) {
+        const u = uMin + ((uMax - uMin) * i) / (COLS - 1);
+        const ripple =
+          Math.sin(time * 3.1 + i * 0.55 + phase) * amp +
+          Math.sin(time * 1.7 - i * 0.31 + phase * 2) * amp * 0.5;
+        const [x, y] = point(u, edge + heights[i] + ripple);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      const back = dMin - 400;
+      ctx.lineTo(...point(uMax, back));
+      ctx.lineTo(...point(uMin, back));
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+    };
+
+    const step = () => {
+      time += 1 / 60;
+      frame++;
+
+      // Front and spray are damped springs, so the water surges, slightly
+      // overshoots, and settles like a liquid instead of easing linearly.
+      frontV += (target - front) * 0.0014 - frontV * 0.052;
+      front += frontV;
+      sprayV += (target + (target > dMin ? 10 : 0) - spray) * 0.0018 - sprayV * 0.057;
+      spray += sprayV;
+      energy = Math.max(energy * 0.965, Math.abs(frontV));
+
+      // Surface columns: springs pulled flat, kicked by the front's motion,
+      // with neighbour spreading so disturbances travel along the edge.
+      for (let i = 0; i < COLS; i++) {
+        speeds[i] += -0.025 * heights[i] - 0.05 * speeds[i];
+        speeds[i] += (Math.random() - 0.5) * Math.abs(frontV) * 0.12;
+        heights[i] += speeds[i];
+      }
+      for (let pass = 0; pass < 4; pass++) {
+        for (let i = 0; i < COLS; i++) {
+          if (i > 0) speeds[i - 1] += (heights[i] - heights[i - 1]) * 0.22;
+          if (i < COLS - 1) speeds[i + 1] += (heights[i] - heights[i + 1]) * 0.22;
+        }
+      }
+
+      if (Math.abs(frontV) > 0.4 && target > dMin && frame % 3 === 0) {
+        const u = uMin + Math.random() * (uMax - uMin);
+        const [x, y] = point(u, front - 6 - Math.random() * 30);
+        const max = 50 + Math.random() * 40;
+        bubbles.push({ x, y, r: 1 + Math.random() * 2.2, life: max, max });
+      }
+      for (const b of bubbles) {
+        b.y -= 0.7;
+        b.x += Math.sin((b.life + b.r * 10) / 8) * 0.3;
+        b.life--;
+      }
+      for (let i = bubbles.length - 1; i >= 0; i--) if (bubbles[i].life <= 0) bubbles.splice(i, 1);
+
+      card.classList.toggle('is-wet', (front - dMin) / (dMax - dMin) > 0.55);
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      if (front <= dMin + 1 && spray <= dMin + 1) return;
+
+      drawLayer(spray, 1.3, rgba(surface, 0.35));
+
+      const [gx0, gy0] = point(0, front);
+      const [gx1, gy1] = point(0, front - (dMax - dMin));
+      const gradient = ctx.createLinearGradient(gx0, gy0, gx1, gy1);
+      gradient.addColorStop(0, rgba(surface));
+      gradient.addColorStop(0.35, rgba(mix(surface, deep, 0.5)));
+      gradient.addColorStop(1, rgba(deep));
+      drawLayer(front, 0, gradient);
+
+      // Foam line just behind the leading edge.
+      ctx.save();
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+
+      for (const b of bubbles) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.55 * (b.life / b.max)})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    };
+
+    let raf = 0;
+    const settled = () =>
+      Math.abs(target - front) < 0.5 &&
+      Math.abs(frontV) < 0.05 &&
+      Math.abs(target - spray) < 12 &&
+      energy < 0.05 &&
+      bubbles.length === 0;
+
+    // Fixed 60 Hz physics steps driven by elapsed time, so the fill takes the
+    // same time on slow devices (fewer frames) as on fast ones.
+    const STEP_MS = 1000 / 60;
+    let last = 0;
+    let pending = 0;
+    const loop = (now: number) => {
+      pending += last ? Math.min(now - last, 100) : STEP_MS;
+      last = now;
+      while (pending >= STEP_MS) {
+        step();
+        pending -= STEP_MS;
+      }
+      draw();
+      if (settled()) {
+        raf = 0;
+        last = 0;
+        pending = 0;
+      } else {
+        raf = requestAnimationFrame(loop);
+      }
+    };
+
+    const pour = (fill: boolean) => {
+      if (!w) {
+        measure();
+        front = spray = target = dMin;
+      } else if (fill) {
+        measure();
+      }
+      target = fill ? dMax : dMin;
+      if (reduceMotion) {
+        front = spray = target;
+        frontV = sprayV = energy = 0;
+        card.classList.toggle('is-wet', fill);
+        draw();
+        return;
+      }
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
+
+    card.addEventListener('pointerenter', () => pour(true));
+    card.addEventListener('pointerleave', () => pour(false));
+    card.addEventListener('focus', () => pour(true));
+    card.addEventListener('blur', () => pour(false));
+  }
+
+  // Re-run after view-transition navigations, which swap in fresh cards.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.hero-cards .glass-card').forEach(setupWater);
+  });
+</script>

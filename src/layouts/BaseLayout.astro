@@ -15,6 +15,7 @@ import { withBase } from '../lib/url';
 import { SITE, NAV_ITEMS } from '../consts';
 import { locale, navLabel, t } from '../i18n';
 import CodeCopy from '../components/CodeCopy.astro';
+import CursorTrail from '../components/CursorTrail.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 
 interface Props {
@@ -201,6 +202,7 @@ const NAV_ICONS: Record<string, string> = {
     </footer>
 
     <CodeCopy />
+    <CursorTrail />
 
     <script>
       // Delegated to `document` so the handler survives view-transition swaps
@@ -240,6 +242,16 @@ const NAV_ICONS: Record<string, string> = {
       );
       document.addEventListener('astro:after-swap', () => {
         lastScrollY = window.scrollY;
+      });
+
+      // Side-rail spotlight follows the pointer; delegated so it survives swaps.
+      document.addEventListener('pointermove', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const rail = event.target.closest<HTMLElement>('.side-rail');
+        if (!rail) return;
+        const box = rail.getBoundingClientRect();
+        rail.style.setProperty('--spot-x', `${event.clientX - box.left}px`);
+        rail.style.setProperty('--spot-y', `${event.clientY - box.top}px`);
       });
     </script>
   </body>

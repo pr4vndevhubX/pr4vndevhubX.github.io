@@ -1,0 +1,131 @@
+---
+// Neon ribbon that trails the mouse: a chain of points eases after the pointer,
+// drawn as a tapered, glowing coral-to-amber line. Canvas overlay with
+// pointer-events: none, so everything underneath stays clickable. Skipped on
+// touch-only devices and when the user prefers reduced motion.
+---
+
+<script>
+  const POINTS = 22;
+  const TAIL: [number, number, number] = [255, 186, 120];
+
+  type Rgb = [number, number, number];
+  const parseColor = (value: string): Rgb => {
+    const hex = value.trim().replace('#', '');
+    const n = parseInt(hex.length === 3 ? [...hex].map((c) => c + c).join('') : hex, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  const mix = (a: Rgb, b: Rgb, t: number): Rgb =>
+    a.map((v, i) => Math.round(v + (b[i] - v) * t)) as Rgb;
+  const rgba = ([r, g, b]: Rgb, a: number) => `rgba(${r}, ${g}, ${b}, ${a})`;
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasFinePointer = matchMedia('(pointer: fine)').matches;
+
+  if (!reduceMotion && hasFinePointer) {
+    const canvas = document.createElement('canvas');
+    canvas.className = 'cursor-trail';
+    canvas.setAttribute('aria-hidden', 'true');
+    const ctx = canvas.getContext('2d');
+
+    const points = Array.from({ length: POINTS }, () => ({ x: 0, y: 0 }));
+    const pointer = { x: 0, y: 0 };
+    let started = false;
+    let speed = 0;
+    let raf = 0;
+    let lastMove = 0;
+    let head: Rgb = [194, 78, 54];
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(innerWidth * dpr);
+      canvas.height = Math.round(innerHeight * dpr);
+      ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    // View transitions replace <body> contents, so re-attach after each swap.
+    const attach = () => {
+      if (!canvas.isConnected) document.body.append(canvas);
+    };
+
+    const draw = (fade: number) => {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      ctx.globalAlpha = fade;
+      const thickness = Math.min(1, 0.35 + speed / 25);
+      ctx.lineCap = 'round';
+      // Two passes: a wide soft glow, then a thin bright core.
+      for (const pass of [
+        { width: 11, alpha: 0.22, blur: 18 },
+        { width: 3.5, alpha: 0.95, blur: 6 },
+      ]) {
+        ctx.shadowBlur = pass.blur;
+        for (let i = 1; i < POINTS; i++) {
+          const t = i / (POINTS - 1);
+          const color = mix(head, TAIL, t);
+          ctx.beginPath();
+          ctx.moveTo(points[i - 1].x, points[i - 1].y);
+          ctx.lineTo(points[i].x, points[i].y);
+          ctx.lineWidth = pass.width * thickness * (1 - t) + 0.5;
+          ctx.strokeStyle = rgba(color, pass.alpha * (1 - t * 0.7));
+          ctx.shadowColor = rgba(color, 0.8);
+          ctx.stroke();
+        }
+      }
+    };
+
+    const frame = () => {
+      const prevX = points[0].x;
+      const prevY = points[0].y;
+      points[0].x += (pointer.x - points[0].x) * 0.45;
+      points[0].y += (pointer.y - points[0].y) * 0.45;
+      let length = 0;
+      for (let i = 1; i < POINTS; i++) {
+        points[i].x += (points[i - 1].x - points[i].x) * 0.42;
+        points[i].y += (points[i - 1].y - points[i].y) * 0.42;
+        length += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+      }
+      speed += (Math.hypot(points[0].x - prevX, points[0].y - prevY) - speed) * 0.2;
+      // Fade as the ribbon collapses and over 350ms once the pointer rests
+      // (time-based, so slow devices fade just as fast), so no tail lingers.
+      const rest = performance.now() - lastMove;
+      const fade = Math.min(1, length / 60) * Math.max(0, 1 - rest / 350);
+      draw(fade);
+      if (fade <= 0 || length < 2) {
+        ctx?.clearRect(0, 0, innerWidth, innerHeight);
+        raf = 0;
+        return;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+
+    window.addEventListener(
+      'pointermove',
+      (event) => {
+        if (event.pointerType === 'touch') return;
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+        lastMove = performance.now();
+        if (!started) {
+          started = true;
+          for (const p of points) {
+            p.x = pointer.x;
+            p.y = pointer.y;
+          }
+        }
+        if (!raf) {
+          // Re-read on wake so the trail follows theme changes.
+          head = parseColor(
+            getComputedStyle(document.documentElement).getPropertyValue('--color-accent'),
+          );
+          raf = requestAnimationFrame(frame);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', resize);
+    document.addEventListener('astro:after-swap', attach);
+    resize();
+    attach();
+  }
+</script>

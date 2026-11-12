@@ -147,6 +147,16 @@ body {
 }
 
 /* Long-form posts get a near-solid panel so body text stays easy to read. */
+/* Neon cursor trail canvas (CursorTrail.astro); never blocks clicks. */
+.cursor-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .glass-panel.is-reading {
   background: color-mix(in oklch, var(--color-surface), transparent 18%);
 }
@@ -301,30 +311,131 @@ a:not(.brand, .button, .rail-link, .glass-card):hover {
   transform: translateY(-50%);
 }
 
+/* Spotlight: a coral glow that tracks the pointer (--spot-x/--spot-y are set
+   by the rail script in BaseLayout). */
+.side-rail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 3.25rem at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklch, var(--color-accent), transparent 45%),
+    transparent 75%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+.side-rail:hover::before {
+  opacity: 1;
+}
+
 .rail-link {
   position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
   color: var(--color-muted);
+  transition: color 180ms ease;
+}
+
+/* The button's circle lives on ::before so it can bounce together with the
+   icon while the hover label (also a child) stays still. */
+.rail-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
   transition:
     background-color 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
+    box-shadow 180ms ease;
 }
 
 .rail-link:hover {
   color: var(--color-text);
+}
+
+.rail-link:hover::before {
   background: var(--glass-bg-strong);
-  transform: scale(1.06);
 }
 
 .rail-link[aria-current='page'] {
   color: var(--color-on-accent);
+}
+
+.rail-link[aria-current='page']::before {
   background: var(--color-accent);
   box-shadow: 0 6px 16px -6px var(--color-accent);
+}
+
+/* Rail buttons (circle + icon) bounce once when their page opens, then loop
+   while hovered; pressing squashes them and the bounce restarts on release. */
+.rail-link[aria-current='page']::before,
+.rail-link[aria-current='page'] .nav-icon {
+  animation: button-bounce 900ms cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
+.rail-link:hover::before,
+.rail-link:hover .nav-icon,
+.rail-link:focus-visible::before,
+.rail-link:focus-visible .nav-icon {
+  animation: button-bounce 900ms cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+}
+
+.rail-link:active::before,
+.rail-link:active .nav-icon {
+  animation: none;
+  transform: scale(0.86, 0.8);
+}
+
+/* Footer social links and the theme toggle bounce as a whole button, looping
+   while hovered; pressing squashes them, and the bounce restarts on release. */
+.social-links a:hover,
+.social-links a:focus-visible,
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  animation: button-bounce 900ms cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+}
+
+.social-links a:active,
+.theme-toggle:active {
+  animation: none;
+  transform: scale(0.86, 0.8);
+}
+
+.rail-link:hover,
+.social-links a:hover,
+.theme-toggle:hover {
+  filter: drop-shadow(0 0 10px color-mix(in oklch, var(--color-accent), transparent 55%));
+}
+
+@keyframes button-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  12% {
+    transform: translateY(0) scale(1.12, 0.88);
+  }
+  32% {
+    transform: translateY(-7px) scale(0.94, 1.08);
+  }
+  50% {
+    transform: translateY(0) scale(1.08, 0.92);
+  }
+  62% {
+    transform: translateY(-2px) scale(0.98, 1.02);
+  }
+  74% {
+    transform: translateY(0) scale(1, 1);
+  }
 }
 
 .rail-label {
